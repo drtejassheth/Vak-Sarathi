@@ -1,0 +1,7 @@
+node_modules/
+www/
+keystore/
+android/local.properties
+ios/build/
+ios-build.log
+build.log

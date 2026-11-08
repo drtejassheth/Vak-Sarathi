@@ -1,0 +1,19 @@
+.DS_Store
+
+# Build output (APKs and iOS builds are produced locally; attach APKs to GitHub Releases instead)
+dist/
+android-app/node_modules/
+android-app/www/
+android-app/ios/build/
+android-app/android/app/build/
+android-app/android/build/
+android-app/android/.gradle/
+android-app/android/app/src/main/assets/public/
+android-app/*.log
+
+# SECRETS: Android release signing key and its passwords. Never commit; back them up privately.
+android-app/keystore/
+android-app/android/local.properties
+*.jks
+*.keystore
+keystore.properties

@@ -1,0 +1,22 @@
+{
+  "appId": "app.prompter.teleprompter",
+  "appName": "Prompter",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0b0d10"
+  },
+  "plugins": {
+    "SystemBars": {
+      "style": "DARK"
+    }
+  },
+  "ios": {
+    "includePlugins": [
+      "@capacitor/filesystem",
+      "@capacitor/share",
+      "@capacitor-community/keep-awake"
+    ],
+    "backgroundColor": "#0b0d10",
+    "contentInset": "never"
+  }
+}
