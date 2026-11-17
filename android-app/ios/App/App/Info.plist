@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Prompter</string>
+	<string>Vāk Sārathī</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -27,11 +27,11 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Prompter shows the camera behind your script and records your takes.</string>
+	<string>Vāk Sārathī shows the camera behind your script and records your takes.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Prompter records sound with your takes and listens for voice scrolling.</string>
+	<string>Vāk Sārathī records sound with your takes and listens for voice scrolling.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Prompter saves your recorded takes to Photos when you choose Save Video.</string>
+	<string>Vāk Sārathī saves your recorded takes to Photos when you choose Save Video.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Voice scrolling follows your speech to move the script.</string>
 	<key>UIApplicationSceneManifest</key>

@@ -1,4 +1,4 @@
-# Prompter: a teleprompter for iPhone, iPad and Android
+# Vāk Sārathī: a teleprompter for iPhone, iPad and Android
 
 A single installable web app (PWA). One codebase runs on all three platforms, installs to the home screen, opens full-screen and works offline. There are no build steps and no dependencies.
 
@@ -83,7 +83,7 @@ From then on it opens like a native app, with no browser bars, and works without
 ### iPhone / iPad: fully offline, including voice scrolling
 
 1. Open the HTTPS link in **Safari** and tap **Share → Add to Home Screen**.
-2. Open **Prompter from the Home Screen icon** once while on Wi-Fi and leave it open for about a minute. It saves the voice engine (46 MB) in the background.
+2. Open **Vāk Sārathī from the Home Screen icon** once while on Wi-Fi and leave it open for about a minute. It saves the voice engine (46 MB) in the background.
 3. To check, open a script → Settings → Voice scrolling. **Offline voice engine** should say *"Saved on this device — works offline ✓"*. If it says *Not saved yet*, tap **Save**.
 
 After that, everything works in flight mode. On iPhone/iPad the app uses the built-in offline engine for English by default. Other languages use Apple's speech service, which needs internet.
@@ -100,9 +100,9 @@ Then open http://localhost:8765. The camera and microphone work on `localhost` t
 
 ## Android app (APK, fully offline)
 
-`android-app/` wraps this same `index.html` into a native Android app with Capacitor. All files are inside the APK, including the offline voice engine, so it never needs internet. Inside the app, recordings save to `Movies/Prompter`, backups and exports save to `Documents/Prompter`, and full screen hides the status and navigation bars.
+`android-app/` wraps this same `index.html` into a native Android app with Capacitor. All files are inside the APK, including the offline voice engine, so it never needs internet. Inside the app, recordings save to `Movies/Vak Sarathi`, backups and exports save to `Documents/Vak Sarathi`, and full screen hides the status and navigation bars.
 
-**Install:** copy `dist/Prompter.apk` to the phone (or download it there), tap it, and allow "Install unknown apps" for the app you opened it from.
+**Install:** copy `dist/VakSarathi.apk` to the phone (or download it there), tap it, and allow "Install unknown apps" for the app you opened it from.
 
 **Rebuild after changing `teleprompter/index.html`:** raise `versionCode` in `android-app/android/app/build.gradle` (so it installs over the old version), then run:
 
@@ -110,7 +110,7 @@ Then open http://localhost:8765. The camera and microphone work on `localhost` t
 cd android-app && npm run build:apk
 ```
 
-This writes a new `dist/Prompter.apk`. The signing key is in `android-app/keystore/`. **Back it up**: updates must be signed with the same key, or you'd have to uninstall first, which deletes your scripts.
+This writes a new `dist/VakSarathi.apk`. The signing key is in `android-app/keystore/`. **Back it up**: updates must be signed with the same key, or you'd have to uninstall first, which deletes your scripts.
 
 ## iPhone / iPad app (native, fully offline)
 

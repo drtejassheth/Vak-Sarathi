@@ -1,4 +1,4 @@
-# Prompter
+# Vāk Sārathī
 
 A teleprompter app for **iPhone, iPad and Android** that works fully offline. One codebase runs three ways: as an installable web app (PWA), as an Android APK, and as a native iOS app.
 
@@ -33,7 +33,7 @@ android-app/           Capacitor wrapper that packages teleprompter/ as native a
 cd teleprompter && python3 -m http.server 8765
 ```
 
-**Android APK** (needs Android Studio's JDK and SDK). Output: `dist/Prompter.apk`.
+**Android APK** (needs Android Studio's JDK and SDK). Output: `dist/VakSarathi.apk`.
 
 ```bash
 cd android-app && npm install && npm run build:apk

@@ -7,12 +7,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Prompter">
+<meta name="apple-mobile-web-app-title" content="Vāk Sārathī">
 <meta name="description" content="Teleprompter for iPhone, iPad and Android: smooth scrolling, voice tracking, mirroring, camera recording and remote control.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-<title>Prompter</title>
+<title>Vāk Sārathī</title>
 <script>if(window.androidBridge||(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.bridge))document.write('<script src="capacitor.js"><\/script>')</script>
 <style>
 :root{
@@ -211,7 +211,7 @@ body[data-view="library"] #toast,body[data-view="editor"] #toast{bottom:calc(var
 <!-- ================= LIBRARY ================= -->
 <section id="library" class="view" aria-label="Script library">
   <header class="bar">
-    <div class="brand"><span class="logo" aria-hidden="true"></span>Prompter</div>
+    <div class="brand"><span class="logo" aria-hidden="true"></span>Vāk Sārathī</div>
     <button class="btn small" id="btnInstall" hidden><svg class="i"><use href="#i-down"/></svg>Install</button>
     <button class="icon-btn" id="btnImport" title="Import scripts (.txt, .md, backup .json)" aria-label="Import"><svg class="i"><use href="#i-import"/></svg></button>
     <button class="icon-btn" id="btnBackup" title="Back up all scripts" aria-label="Back up all scripts"><svg class="i"><use href="#i-export"/></svg></button>
@@ -299,7 +299,7 @@ body[data-view="library"] #toast,body[data-view="editor"] #toast{bottom:calc(var
       </div>
     </div>
   </div>
-  <aside id="settings" class="sheet" aria-label="Prompter settings">
+  <aside id="settings" class="sheet" aria-label="Vāk Sārathī settings">
     <div class="sheet-head"><h3>Settings</h3><button class="icon-btn" id="setClose" aria-label="Close settings"><svg class="i"><use href="#i-close"/></svg></button></div>
     <div id="setBody"></div>
   </aside>
@@ -350,9 +350,9 @@ async function nativeShare(blob,filename){
   catch(e){if(!/cancel/i.test(String(e&&e.message)))toast('Could not share: '+(e&&e.message||e))}
 }
 async function nativeSaveToPhone(blob,filename,folder){
-  try{await nativeWrite(blob,folder+'/Prompter/'+filename,'EXTERNAL_STORAGE');toast('Saved to '+folder+'/Prompter on your phone',{ms:3500});return true}
+  try{await nativeWrite(blob,folder+'/Vak Sarathi/'+filename,'EXTERNAL_STORAGE');toast('Saved to '+folder+'/Vak Sarathi on your phone',{ms:3500});return true}
   catch(e){
-    try{await nativeWrite(blob,'Prompter/'+filename,'DOCUMENTS');toast('Saved to Documents/Prompter on your phone',{ms:3500});return true}
+    try{await nativeWrite(blob,'Vak Sarathi/'+filename,'DOCUMENTS');toast('Saved to Documents/Vak Sarathi on your phone',{ms:3500});return true}
     catch(e2){toast('Could not save: '+(e2&&e2.message||e2));return false}
   }
 }
@@ -377,7 +377,7 @@ function closeModal(){if($('#modal').hidden)return;$('#modal').hidden=true;const
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 
 async function saveBlob(blob,filename){
-  if(NATIVE&&NP.Filesystem){if(await nativeSaveToPhone(blob,filename,'Documents')&&NP.Share)toast('Saved to Documents/Prompter',{action:'Share',onAction:()=>nativeShare(blob,filename),ms:5000});return}
+  if(NATIVE&&NP.Filesystem){if(await nativeSaveToPhone(blob,filename,'Documents')&&NP.Share)toast('Saved to Documents/Vak Sarathi',{action:'Share',onAction:()=>nativeShare(blob,filename),ms:5000});return}
   try{
     const file=new File([blob],filename,{type:blob.type});
     if(navigator.canShare&&navigator.canShare({files:[file]})&&(isIOS||/Android/i.test(navigator.userAgent))){await navigator.share({files:[file],title:filename});return}
@@ -416,7 +416,7 @@ let S=Object.assign({},DEFAULTS,LS.get('tp.settings',{}));
 const saveSettings=()=>LS.set('tp.settings',S);
 
 const SAMPLE=`# Welcome
-Welcome to Prompter — a teleprompter for your iPhone, iPad and Android.
+Welcome to Vāk Sārathī — a teleprompter for your iPhone, iPad and Android.
 [Smile and look just below the lens]
 
 Press play, or tap the text, to start scrolling. Drag up and down to move through the script, and pinch to make the words bigger or smaller.
@@ -514,7 +514,7 @@ $('#fileInput').addEventListener('change',async e=>{
 });
 $('#btnBackup').onclick=()=>{
   const data={app:'prompter',version:1,exported:new Date().toISOString(),scripts,settings:S};
-  saveBlob(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),'prompter-backup-'+new Date().toISOString().slice(0,10)+'.json');
+  saveBlob(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),'vak-sarathi-backup-'+new Date().toISOString().slice(0,10)+'.json');
 };
 let installEvt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('#btnInstall').hidden=false});
@@ -835,7 +835,7 @@ function toggleFullscreen(){
   if(NATIVE&&NP.SystemBars){setNativeFull(!nativeFull);return}
   const d=document,el=d.documentElement;
   if(d.fullscreenElement||d.webkitFullscreenElement)(d.exitFullscreen||d.webkitExitFullscreen).call(d);
-  else{const f=el.requestFullscreen||el.webkitRequestFullscreen;if(f)Promise.resolve(f.call(el)).catch(()=>{});else toast(isIOS?'Add Prompter to your Home Screen for full-screen mode':'Full screen not available here')}
+  else{const f=el.requestFullscreen||el.webkitRequestFullscreen;if(f)Promise.resolve(f.call(el)).catch(()=>{});else toast(isIOS?'Add Vāk Sārathī to your Home Screen for full-screen mode':'Full screen not available here')}
 }
 
 /* Keyboard + Bluetooth remotes */

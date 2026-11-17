@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Prompter</string>
-    <string name="title_activity_main">Prompter</string>
+    <string name="app_name">Vāk Sārathī</string>
+    <string name="title_activity_main">Vāk Sārathī</string>
     <string name="package_name">app.prompter.teleprompter</string>
     <string name="custom_url_scheme">app.prompter.teleprompter</string>
 </resources>

@@ -1,11 +1,11 @@
 {
   "name": "prompter-android",
   "version": "1.0.0",
-  "description": "Android build of the Prompter teleprompter",
+  "description": "Android and iOS builds of the Vāk Sārathī teleprompter",
   "main": "index.js",
   "scripts": {
     "sync": "./prepare-web.sh && npx cap sync android",
-    "build:apk": "npm run sync && cd android && export JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\" && ./gradlew assembleRelease && mkdir -p ../../dist && cp app/build/outputs/apk/release/app-release.apk ../../dist/Prompter.apk && echo Built dist/Prompter.apk",
+    "build:apk": "npm run sync && cd android && export JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\" && ./gradlew assembleRelease && mkdir -p ../../dist && cp app/build/outputs/apk/release/app-release.apk ../../dist/VakSarathi.apk && echo Built dist/VakSarathi.apk",
     "build:debug": "npm run sync && cd android && export JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\" && ./gradlew assembleDebug",
     "sync:ios": "./prepare-web.sh && npx cap sync ios",
     "build:ios": "npm run sync:ios && xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -destination generic/platform=iOS -derivedDataPath ios/build -allowProvisioningUpdates build"
