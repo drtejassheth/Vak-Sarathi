@@ -56,6 +56,10 @@ if [ -z "$devices" ]; then exit 0; fi   # nothing nearby; try again next run
 # 2. does any reachable device need a new copy?
 git -C "$REPO" pull --ff-only -q 2>/dev/null || log "git pull skipped (offline or local changes)"
 head=$(git -C "$REPO" rev-parse --short HEAD)
+lockhash=$(shasum "$APPDIR/package-lock.json" 2>/dev/null | cut -c1-12)
+if [ ! -d "$APPDIR/node_modules" ] || [ "$lockhash" != "$(cat "$STATE/deps-hash" 2>/dev/null)" ]; then
+  (cd "$APPDIR" && npm ci --silent >/dev/null 2>&1) && echo "$lockhash" >"$STATE/deps-hash" || log "npm ci failed"
+fi
 need_any=0
 while read -r udid name; do
   read -r dcommit dexp 2>/dev/null <"$STATE/devices/$udid" || { dcommit=none; dexp=0; }
