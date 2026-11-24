@@ -119,14 +119,15 @@ This writes a new `dist/VakSarathi.apk`. The signing key is in `android-app/keys
 **Install or reinstall** (phone plugged into this Mac, unlocked, Developer Mode on):
 
 ```bash
-cd android-app && npm run sync:ios && xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'id=00008110-000A719C3E46401E' -derivedDataPath ios/build -allowProvisioningUpdates -allowProvisioningDeviceRegistration build && xcrun devicectl device install app --device 00008110-000A719C3E46401E ios/build/Build/Products/Release-iphoneos/App.app
+cd android-app && npm run sync:ios && xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'id=<DEVICE-ID>' -derivedDataPath ios/build -allowProvisioningUpdates -allowProvisioningDeviceRegistration build && xcrun devicectl device install app --device <DEVICE-ID> ios/build/Build/Products/Release-iphoneos/App.app
 ```
 
 Or open `android-app/ios/App/App.xcodeproj` in Xcode, pick the iPhone at the top, and press ▶.
 
 - **First install only:** on the phone, go to Settings → General → VPN & Device Management → your Apple Development account → **Trust**.
 - **Free Apple ID:** Apple stops the app opening after **7 days**. Reinstall with the command above; your scripts are kept. A paid Apple Developer account ($99/yr) extends this to a year and allows TestFlight and the App Store.
-- **iPad:** plug it in, enable Developer Mode the same way, and use its ID from `xcrun devicectl list devices` in the command.
+- Find `<DEVICE-ID>` with `xcrun devicectl list devices`. For an iPad, enable Developer Mode the same way.
+- **Automatic renewal:** `scripts/install-ios-autoupdate.sh` sets this Mac to reinstall the latest version every few days (see the main README).
 
 ## Updating the app
 

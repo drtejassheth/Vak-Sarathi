@@ -336,7 +336,7 @@ const isStandalone=matchMedia('(display-mode: standalone)').matches||navigator.s
 /* Native (Android/iOS app via Capacitor) */
 const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 const NP={};
-if(NATIVE)for(const n of['Filesystem','Share','SpeechRecognition','KeepAwake','SystemBars']){try{if(Capacitor.isPluginAvailable(n))NP[n]=Capacitor.registerPlugin(n)}catch(e){}}
+if(NATIVE)for(const n of['Filesystem','Share','SpeechRecognition','KeepAwake','SystemBars','AppUpdater']){try{if(Capacitor.isPluginAvailable(n))NP[n]=Capacitor.registerPlugin(n)}catch(e){}}
 function blobToB64(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=rej;r.readAsDataURL(b)})}
 async function nativeWrite(blob,path,directory){
   const FS=NP.Filesystem,CH=3*1024*1024;let off=0;
@@ -1270,6 +1270,8 @@ const SET_UI=[
   ['showTimer','Show timer & pace','toggle'],
   ['showProgress','Show progress bar','toggle'],
   ['readingWpm','Reading pace for estimates','range',80,220,5,' wpm'],
+  ['About'],
+  ['appVersion','Vāk Sārathī','version'],
 ];
 const META={};
 const NO_LAYOUT=new Set(['speed','countdown','autoPause','loop','tapToPause','voiceLang','voiceEngine','readingWpm','camFacing']);
@@ -1282,6 +1284,7 @@ function buildSettings(){
     else if(type==='toggle')h+=`<label class="set-row"><span class="lbl">${label}</span><input type="checkbox" class="switch" data-k="${k}"></label>`;
     else if(type==='select')h+=`<label class="set-row"><span class="lbl">${label}</span><select data-k="${k}">${Object.entries(a).map(([v,t])=>`<option value="${v}">${esc(t)}</option>`).join('')}</select></label>`;
     else if(type==='color')h+=`<label class="set-row"><span class="lbl">${label}</span><input type="color" data-k="${k}"></label>`;
+    else if(type==='version')h+=`<div class="set-row"><span class="lbl" style="flex-direction:column;gap:2px">${label}<small id="verStatus" style="color:var(--ui-muted);font-size:13px"></small></span><button class="btn small" id="updCheck" hidden>Check for updates</button></div>`;
     else if(type==='offline')h+=`<div class="set-row"><span class="lbl" style="flex-direction:column;gap:2px">${label}<small id="voStatus" style="color:var(--ui-muted);font-size:13px"></small></span><button class="btn small" id="voSave">Save</button></div>`;
     else if(type==='themes')h+=`<div class="set-row themes">${Object.entries(THEMES).map(([id,t])=>`<button class="swatch" data-theme="${id}" style="color:${t.fg};background:${t.bg}">Aa<small>${t.name}</small></button>`).join('')}</div>`;
   }
@@ -1293,6 +1296,7 @@ function buildSettings(){
     if(sw){const t=THEMES[sw.dataset.theme];Object.assign(S,{theme:sw.dataset.theme,textColor:t.fg,bgColor:t.bg,cueColor:t.cue});saveSettings();applyStyles();syncSettingsUI();return}
     if(e.target.id==='setHelp')showHelp();
     if(e.target.id==='voSave')saveVoiceOffline(true);
+    if(e.target.id==='updCheck'){closeSettings();checkForUpdate(true)}
     if(e.target.id==='setReset'&&confirm('Reset all prompter settings to defaults?')){S=Object.assign({},DEFAULTS);saveSettings();applyStyles();syncSettingsUI();toast('Settings reset')}
   });
   syncSettingsUI();
@@ -1313,8 +1317,65 @@ function syncSettingsUI(){
   $$('#setBody output').forEach(o=>{const k=o.dataset.out;o.textContent=fmtNum(S[k])+(META[k].unit||'')});
   $$('#setBody .swatch').forEach(b=>b.classList.toggle('sel',b.dataset.theme===S.theme));
 }
-function openSettings(){P.sheetOpen=true;syncSettingsUI();updateVoUI();$('#settings').classList.add('open');$('#btnSettings').classList.add('on');showHud()}
+function openSettings(){P.sheetOpen=true;syncSettingsUI();updateVoUI();updateVersionUI();$('#settings').classList.add('open');$('#btnSettings').classList.add('on');showHud()}
 function closeSettings(){P.sheetOpen=false;$('#settings').classList.remove('open');$('#btnSettings').classList.remove('on');scheduleHudHide()}
+
+/* =========================================================
+   Auto-updater (Android app): checks the public GitHub releases
+   ========================================================= */
+const UPDATE_REPO='drtejassheth/vak-sarathi';
+const IS_ANDROID_APP=NATIVE&&window.Capacitor&&Capacitor.getPlatform&&Capacitor.getPlatform()==='android';
+let updBusy=false,appInfo=null;
+function verCmp(a,b){const x=String(a).replace(/^v/,'').split('.').map(n=>parseInt(n)||0),y=String(b).replace(/^v/,'').split('.').map(n=>parseInt(n)||0);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0?1:-1}return 0}
+async function getAppInfo(){if(appInfo)return appInfo;if(IS_ANDROID_APP&&NP.AppUpdater){try{appInfo=await NP.AppUpdater.getInfo()}catch(e){}}return appInfo}
+async function checkForUpdate(manual){
+  if(!IS_ANDROID_APP||!NP.AppUpdater){if(manual)toast(NATIVE?'On iPhone/iPad, updates are installed from your Mac':'The web app updates itself when you reopen it online');return}
+  if(updBusy)return;
+  if(!manual&&Date.now()-LS.get('tp.updCheckT',0)<6*3600e3)return;
+  if(!navigator.onLine){if(manual)toast('Connect to the internet to check for updates');return}
+  updBusy=true;
+  try{
+    if(manual)toast('Checking for updates…');
+    const r=await fetch(`https://api.github.com/repos/${UPDATE_REPO}/releases/latest`,{headers:{Accept:'application/vnd.github+json'},cache:'no-store'});
+    if(!r.ok)throw new Error('GitHub replied '+r.status);
+    const rel=await r.json();LS.set('tp.updCheckT',Date.now());
+    const asset=(rel.assets||[]).find(a=>/\.apk$/i.test(a.name));
+    const info=await getAppInfo();const latest=String(rel.tag_name||'').replace(/^v/,'');
+    if(!asset||!info||verCmp(latest,info.versionName)<=0){if(manual)toast(`You have the latest version (${info?info.versionName:'?'})`);return}
+    if(!manual&&LS.get('tp.updLater','')===rel.tag_name+'|'+new Date().toDateString())return;
+    const notes=String(rel.body||'').replace(/\*\*|`|#+ /g,'').trim().slice(0,700);
+    const box=document.createElement('div');
+    box.innerHTML=`<p style="margin:0 0 10px"><b>${esc(rel.name||'Version '+latest)}</b> is available. You have ${esc(info.versionName)}.</p><p style="margin:0;white-space:pre-line;color:var(--ui-muted);font-size:14px">${esc(notes)}</p><p style="margin:12px 0 0;font-size:13px;color:var(--ui-muted)">Your scripts and settings are kept. Download: ${(asset.size/1048576).toFixed(0)} MB.</p>`;
+    openModal({title:'Update available',body:box,actions:[
+      {label:'Later',onClick:()=>LS.set('tp.updLater',rel.tag_name+'|'+new Date().toDateString())},
+      {label:'Update now',primary:true,onClick:()=>installUpdate(asset)}]});
+  }catch(e){if(manual)toast('Could not check for updates: '+e.message,{ms:4000})}
+  finally{updBusy=false}
+}
+async function installUpdate(asset){
+  const U=NP.AppUpdater;
+  try{
+    const c=await U.canInstall();
+    if(!c.allowed){
+      openModal({title:'One-time permission',body:'<p style="margin:0">Android needs permission for Vāk Sārathī to install its own updates. On the next screen, turn on <b>Allow from this source</b>, come back, and tap <b>Update now</b> again.</p>',
+        actions:[{label:'Cancel'},{label:'Open settings',primary:true,onClick:()=>U.openInstallSettings()}]});
+      return;
+    }
+    const sub=await U.addListener('progress',p=>{if(p.total>0)toast(`Downloading update… ${Math.round(p.loaded/p.total*100)}%`,{ms:4000})});
+    toast('Downloading update…',{ms:4000});
+    try{await U.downloadAndInstall({url:asset.browser_download_url})}finally{sub.remove()}
+    toast('Tap Install (or Update) to finish',{ms:5000});
+  }catch(e){toast('Update failed: '+(e&&e.message||e),{ms:5000})}
+}
+function autoCheckUpdate(){if(IS_ANDROID_APP&&view==='library')checkForUpdate(false)}
+window.addEventListener('hashchange',()=>setTimeout(autoCheckUpdate,1500));
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(autoCheckUpdate,1500)});
+async function updateVersionUI(){
+  const el=$('#verStatus'),b=$('#updCheck');if(!el)return;
+  const info=await getAppInfo();
+  el.textContent=info?'Version '+info.versionName:NATIVE?'iPhone/iPad app':'Web app';
+  if(b)b.hidden=!IS_ANDROID_APP;
+}
 
 /* =========================================================
    Boot
@@ -1323,6 +1384,7 @@ window.addEventListener('pagehide',()=>{if(view==='editor')flushEditorSoft()});
 if(!NATIVE&&'serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('sw.js').catch(()=>{});
 route();
 autoSaveVoice();
+setTimeout(autoCheckUpdate,4000);
 </script>
 </body>
 </html>

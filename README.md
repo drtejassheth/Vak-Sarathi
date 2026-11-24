@@ -49,8 +49,26 @@ cd android-app && npm install && npm run sync:ios
 
 After changing `teleprompter/index.html`, run `npm run sync` (Android) or `npm run sync:ios` before rebuilding.
 
+## Updates
+
+- **Android:** the app checks this repository's latest GitHub release when you open it (at most every 6 hours, and only on the library screen). When a newer version exists it offers **Update now**, downloads the APK and opens Android's installer. Android always asks you to tap Install. You can also check manually in Settings → About → Check for updates.
+- **iPhone / iPad:** run `scripts/install-ios-autoupdate.sh` once on the Mac that builds the app. Every 3 hours it looks for your paired iPhone/iPad (USB or the same Wi-Fi), pulls the latest code and reinstalls when the free 7-day signature is under 3 days from expiring or the code has changed. Log: `~/Library/Logs/VakSarathi-ios-refresh.log`. Turn it off with `scripts/install-ios-autoupdate.sh --remove`.
+- **Web app:** reloads the latest version whenever it's opened online.
+
+**To publish a new version:**
+
+```bash
+scripts/release.sh 1.5 "What changed"
+```
+
+This bumps the version, builds the signed APK, pushes and creates the GitHub release.
+
 ## Third-party components
 
 - [Capacitor](https://capacitorjs.com) (MIT): native wrapper and plugins
 - [vosk-browser](https://github.com/ccoreilly/vosk-browser) (Apache-2.0): `teleprompter/voice/vosk.js`
 - [Vosk small English model 0.15](https://alphacephei.com/vosk/models) by Alpha Cephei (Apache-2.0): `teleprompter/voice/model-en-us.tgz`
+
+## License
+
+MIT. See [LICENSE](LICENSE). Third-party components keep their own licences.
